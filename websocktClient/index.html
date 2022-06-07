@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+
+      <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+      <script>
+    const socket = io.connect('https://suez.test:3000?userId=1&userType=driver',{secure: true});
+     console.log(socket)
+//      socket.emit('map', {
+//            userId:1,
+//            lat:30.044420,
+//            lng:31.235712,
+//            label:'khaled'
+//      });
+//      socket.emit('map', {
+//            userId:1,
+//            lat:29.992658,
+//            lng:31.227657,
+//            label:'khaled'
+//      });
+//      socket.emit('map', {
+//            userId:1,
+//            lat:31.197972,
+//            lng:32.363021,
+// label:'khaled'
+//      });
+socket.on('room-created', function(data) {
+                console.log(data)
+                // alert('Driver Id is lest '+ data.id)
+            });
+socket.on('new-subscriber-joined', function(data) {
+      console.log(data)
+      // alert('Driver Id is lest '+ data.id)
+});    
+socket.on('get-all-rooms', function(data) {
+                console.log(data)
+                // alert('Driver Id is lest '+ data.id)
+            }); 
+
+      socket.on('push-data', function(data) {
+            console.log(data)
+            // alert('Driver Id is lest '+ data.id)
+      });
+function sendData(){
+      socket.emit('send-data', {
+      
+      //      to:{rooms :['room1','room 2'],userId:[5,6]},
+           to:{rooms:['room1','room2']},
+           data:
+                 {
+                  userId:1,
+                  lat:31.154939,
+                  lng:30.095844,
+                  label:'khaled'
+            }  
+           
+         
+     });
+}
+function sendMessage(){
+      socket.emit('send-data', {
+           userId:1,
+         //  to:[2],
+           data:[
+                 {
+                  message:'khaleds'
+            } 
+      ]
+     });    
+}
+function createRoom(){
+      // room is the truck uniq id or phone number 
+      socket.emit('create', 'room1');
+
+}
+function createRoom2(){
+      // room is the truck uniq id or phone number 
+      socket.emit('create', 'room2');
+
+}
+      </script>
+</head>
+<body>
+
+      <button onclick="createRoom()">Create Room</button>
+      <button onclick="createRoom2()">Create Room2</button>
+      <button onclick="sendData()">Send Location</button>
+      <button onclick="sendMessage()">Send MEssage</button>
+ 
+</body>
+</html>
