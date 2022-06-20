@@ -7,11 +7,23 @@ module.exports = function (io) {
     // send to admin
 
     var socketRoom={}
+    var socketUsers={}
     io.on('connection', function (socket) {
 
         socket.userType=socket.handshake.query.userType;
         socket.userId=socket.handshake.query.userId;
+        socket.userName=socket.handshake.query.userName;
 
+        console.log('socket console ' )
+        socketUsers[socket.id]={
+            userId:socket.userId,
+            userName:socket.userName,
+            userType:socket.userType,
+            status:'connected',
+            socketId:socket.id,
+            locations:[]
+            //push room
+        }
         socket.on('create', (room) => {
             /*
             * check if there customers or admins to put in this room
@@ -38,6 +50,7 @@ module.exports = function (io) {
             io.sockets.in(room).emit('new-subscriber-joined', room); // edit the message
         });
         socket.on('subscribe-to-all-rooms', () => {
+            console.log(socketUsers)
 
             //join current session to all rooms
             socket.join(Object.keys(socketRoom))
@@ -48,7 +61,8 @@ module.exports = function (io) {
             /*
             * if rooms or id's
             * */
-
+            socketUsers[socket.id].locations.push(data.data)
+            console.log(socketUsers[socket.id])
             io.sockets.in(data.to.rooms).emit('push-data', data.data); // This will emit the event to all connected sockets
         });
         // check if room exist return true with socket
@@ -58,6 +72,18 @@ module.exports = function (io) {
             * */
 
             socket.emit('get-all-rooms',socketRoom)
+
+        })
+
+        socket.on('get-clients-by-type',(type)=>{
+            let data=Object.values(socketUsers)
+            // console.log(data)
+                data=data.filter(function (element) {
+                if (element.userType === type)
+                    return element
+            })
+            console.log('list-of-driver')
+            socket.emit('list-of-'+type,data)
 
         })
 
